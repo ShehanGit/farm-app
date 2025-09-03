@@ -27,9 +27,15 @@ const AnimalBatch = sequelize.define('AnimalBatch', {
     type: DataTypes.STRING,
     defaultValue: 'healthy'
   },
-  keepingMethod: {  // Expanded for all practical types
+  keepingMethod: {
     type: DataTypes.ENUM('freeRange', 'certifiedOrganic', 'conventional', 'pastureRaised', 'cageFree', 'batteryCage', 'enrichedCage', 'aviary', 'mixed', 'other'),
     defaultValue: 'conventional'
+  },
+  lastCleanDate: {  // New: Last cleaning date
+    type: DataTypes.DATE
+  },
+  vetNotes: {  // New: Vet details
+    type: DataTypes.TEXT
   },
   notes: {
     type: DataTypes.TEXT

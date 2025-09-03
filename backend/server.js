@@ -31,6 +31,8 @@ const batchVaccinationRoutes = require('./routes/batchVaccinationRoutes');
 const supplementLogRoutes = require('./routes/supplementLogRoutes');
 const expenseRoutes = require('./routes/expenseRoutes');
 const incomeRoutes = require('./routes/incomeRoutes');
+const legRingRoutes = require('./routes/legRingRoutes');
+const biosecurityLogRoutes = require('./routes/biosecurityLogRoutes');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/animals', animalRoutes);
@@ -52,6 +54,8 @@ app.use('/api/batch-vaccinations', batchVaccinationRoutes);
 app.use('/api/supplement-logs', supplementLogRoutes);
 app.use('/api/expenses', expenseRoutes);
 app.use('/api/incomes', incomeRoutes);
+app.use('/api/leg-rings', legRingRoutes);
+app.use('/api/biosecurity-logs', biosecurityLogRoutes);
 
 // Sync DB and start server
 const PORT = process.env.PORT || 5000;

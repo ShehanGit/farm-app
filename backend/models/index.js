@@ -15,12 +15,14 @@ const LifeEvent = require('./LifeEvent');
 const WeightRecord = require('./WeightRecord');
 const EggProductionLog = require('./EggProductionLog');
 const FeedConsumptionLog = require('./FeedConsumptionLog');
-const BatchVaccination = require('./BatchVaccination');  // New
-const SupplementLog = require('./SupplementLog');  // New
-const Expense = require('./Expense');  // New
-const Income = require('./Income');  // New
+const BatchVaccination = require('./BatchVaccination');
+const SupplementLog = require('./SupplementLog');
+const Expense = require('./Expense');
+const Income = require('./Income');
+const LegRing = require('./LegRing');  // New
+const BiosecurityLog = require('./BiosecurityLog');  // New
 
-// Associations (previous + new for batch connections)
+// Associations (previous + new)
 Animal.hasMany(AnimalBatch, { foreignKey: 'animalId' });
 AnimalBatch.belongsTo(Animal, { foreignKey: 'animalId' });
 
@@ -51,7 +53,6 @@ WeightRecord.belongsTo(Chicken, { foreignKey: 'chickenId' });
 Chicken.belongsTo(AnimalBatch, { as: 'ParentBatch', foreignKey: 'parentBatchId' });
 AnimalBatch.hasMany(Chicken, { as: 'ChildrenChickens', foreignKey: 'parentBatchId' });
 
-// New for improved batch features/separation
 AnimalBatch.hasMany(EggProductionLog, { foreignKey: 'batchId' });
 EggProductionLog.belongsTo(AnimalBatch, { foreignKey: 'batchId' });
 
@@ -72,6 +73,13 @@ Income.belongsTo(AnimalBatch, { foreignKey: 'batchId' });
 
 AnimalBatch.hasMany(Chicken, { foreignKey: 'batchId' });
 Chicken.belongsTo(AnimalBatch, { foreignKey: 'batchId' });
+
+// New associations
+Chicken.hasMany(LegRing, { foreignKey: 'chickenId' });
+LegRing.belongsTo(Chicken, { foreignKey: 'chickenId' });
+
+AnimalBatch.hasMany(BiosecurityLog, { foreignKey: 'batchId' });
+BiosecurityLog.belongsTo(AnimalBatch, { foreignKey: 'batchId' });
 
 const syncDatabase = async () => {
   try {
@@ -104,5 +112,7 @@ module.exports = {
   BatchVaccination,
   SupplementLog,
   Expense,
-  Income
+  Income,
+  LegRing,  // New
+  BiosecurityLog  // New
 };

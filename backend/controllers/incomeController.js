@@ -5,8 +5,8 @@ exports.getIncomes = async (req, res) => {
   try {
     const where = batchId ? { batchId } : {};
     const incomes = await Income.findAll({ where, include: [AnimalBatch] });
-    const total = incomes.reduce((sum, inc) => sum + inc.amountLKR, 0);
-    res.json({ incomes, total });
+    const totalAmountLKR = incomes.reduce((sum, inc) => sum + inc.amountLKR, 0);
+    res.json({ incomes, summary: { totalAmountLKR } });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -26,7 +26,7 @@ exports.updateIncome = async (req, res) => {
   try {
     const [updated] = await Income.update(req.body, { where: { id } });
     if (updated) {
-      const updatedIncome = await Income.findByPk(id);
+      const updatedIncome = await Income.findByPk(id, { include: [AnimalBatch] });
       res.json(updatedIncome);
     } else {
       res.status(404).json({ msg: 'Income not found' });
