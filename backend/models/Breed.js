@@ -9,29 +9,29 @@ const Breed = sequelize.define('Breed', {
   },
   name: {
     type: DataTypes.STRING,
-    allowNull: false  // e.g., 'Rhode Island Red'
+    allowNull: false
   },
   isBroody: {
     type: DataTypes.BOOLEAN,
     defaultValue: false
   },
   averageLifespanMonths: {
-    type: DataTypes.INTEGER  // e.g., 96 for 8 years
+    type: DataTypes.INTEGER
   },
   timeToFirstEggWeeks: {
-    type: DataTypes.INTEGER  // e.g., 20
+    type: DataTypes.INTEGER
   },
   productiveLayingPeriodMonths: {
-    type: DataTypes.INTEGER  // e.g., 36
+    type: DataTypes.INTEGER
   },
   averageChickMarketPriceLKR: {
-    type: DataTypes.FLOAT  // e.g., 500.00
+    type: DataTypes.FLOAT
   },
   hardinessRating: {
     type: DataTypes.INTEGER  // 1-10
   },
   temperamentDescription: {
-    type: DataTypes.STRING  // e.g., 'Calm'
+    type: DataTypes.STRING
   },
   eggSizeCategory: {
     type: DataTypes.ENUM('small', 'medium', 'large')
@@ -45,8 +45,26 @@ const Breed = sequelize.define('Breed', {
   forageAbilityRating: {
     type: DataTypes.INTEGER  // 1-10
   },
+  averageEggColor: {  // New: e.g., 'brown'
+    type: DataTypes.STRING
+  },
+  noiseLevelRating: {  // New: 1-10 (quiet to noisy)
+    type: DataTypes.INTEGER
+  },
+  flightinessScore: {  // New: 1-10 (calm to flighty)
+    type: DataTypes.INTEGER
+  },
+  dualPurposeRating: {  // New: 1-10 for meat/egg balance
+    type: DataTypes.INTEGER
+  },
+  parasiteResistanceLevel: {  // New: 1-10
+    type: DataTypes.INTEGER
+  },
+  averageAnnualFeedConsumptionKg: {  // New: Per chicken
+    type: DataTypes.FLOAT
+  },
   healthyWeightByAgeMonths: {
-    type: DataTypes.JSON  // e.g., [{ageMonths: 1, weightKg: 0.5}, {ageMonths: 3, weightKg: 1.2}]
+    type: DataTypes.JSON
   }
 });
 

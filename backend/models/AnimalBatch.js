@@ -13,7 +13,7 @@ const AnimalBatch = sequelize.define('AnimalBatch', {
   },
   animal_type: {
     type: DataTypes.STRING,
-    allowNull: false  // e.g., 'hen', 'goat', 'bee'
+    allowNull: false
   },
   count: {
     type: DataTypes.INTEGER,
@@ -24,8 +24,26 @@ const AnimalBatch = sequelize.define('AnimalBatch', {
     allowNull: false
   },
   health_status: {
-    type: DataTypes.STRING,  // e.g., 'healthy', 'quarantined'
+    type: DataTypes.STRING,
     defaultValue: 'healthy'
+  },
+  keepingMethod: {
+    type: DataTypes.ENUM('freeRange', 'organic', 'conventional', 'pastureRaised', 'cageFree', 'batteryCage', 'enrichedCage', 'aviary', 'other'),
+    defaultValue: 'conventional'
+  },
+  keepingMethodHistory: {  // New: JSON for method changes, e.g., [{date, method, notes}]
+    type: DataTypes.JSON
+  },
+  batchCostLKR: {  // New: Total expenses for batch
+    type: DataTypes.FLOAT,
+    defaultValue: 0
+  },
+  mortalityRate: {  // New: Percentage, manually/calculated updated
+    type: DataTypes.FLOAT,
+    defaultValue: 0
+  },
+  performanceMetrics: {  // New: JSON for ratios, e.g., {feedToEggRatio: 2.5}
+    type: DataTypes.JSON
   },
   notes: {
     type: DataTypes.TEXT

@@ -7,16 +7,12 @@ const Duck = sequelize.define('Duck', {
     autoIncrement: true,
     primaryKey: true
   },
-  animalId: {  // Foreign key for association
-    type: DataTypes.INTEGER,
-    allowNull: false
-  },
   breed: {
     type: DataTypes.STRING,
-    allowNull: false  // e.g., 'Pekin Duck'
+    allowNull: false
   },
   production_rate: {
-    type: DataTypes.INTEGER,  // e.g., eggs/year or meat metrics
+    type: DataTypes.INTEGER,
     defaultValue: 0
   },
   vaccination_history: {

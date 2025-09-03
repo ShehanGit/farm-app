@@ -25,6 +25,8 @@ const vaccinationRoutes = require('./routes/vaccinationRoutes');
 const breedRoutes = require('./routes/breedRoutes');
 const lifeEventRoutes = require('./routes/lifeEventRoutes');
 const weightRecordRoutes = require('./routes/weightRecordRoutes');
+const eggProductionLogRoutes = require('./routes/eggProductionLogRoutes');
+const feedConsumptionLogRoutes = require('./routes/feedConsumptionLogRoutes');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/animals', animalRoutes);
@@ -40,6 +42,8 @@ app.use('/api/vaccinations', vaccinationRoutes);
 app.use('/api/breeds', breedRoutes);
 app.use('/api/life-events', lifeEventRoutes);
 app.use('/api/weight-records', weightRecordRoutes);
+app.use('/api/egg-production-logs', eggProductionLogRoutes);
+app.use('/api/feed-consumption-logs', feedConsumptionLogRoutes);
 
 // Sync DB and start server
 const PORT = process.env.PORT || 5000;

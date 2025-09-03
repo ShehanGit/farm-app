@@ -11,27 +11,41 @@ const Chicken = sequelize.define('Chicken', {
     type: DataTypes.INTEGER,
     allowNull: false
   },
-  breedId: {  // New: Foreign key for Breed
+  batchId: {  // New: Link to AnimalBatch for separation
+    type: DataTypes.INTEGER
+  },
+  breedId: {
     type: DataTypes.INTEGER,
     allowNull: false
   },
-  parentId: {  // For lineages (self-referencing)
+  parentBatchId: {
     type: DataTypes.INTEGER
+  },
+  parentNotes: {
+    type: DataTypes.TEXT
+  },
+  sex: {
+    type: DataTypes.ENUM('male', 'female', 'unknown'),
+    defaultValue: 'unknown'
+  },
+  purchasePriceLKR: {
+    type: DataTypes.FLOAT,
+    defaultValue: 0
   },
   petName: {
     type: DataTypes.STRING
   },
   injuries: {
-    type: DataTypes.JSON  // e.g., [{date, description}]
+    type: DataTypes.JSON
   },
   legBandHistory: {
-    type: DataTypes.JSON  // e.g., [{date, bandId, size}]
+    type: DataTypes.JSON
   },
   status: {
     type: DataTypes.ENUM('active', 'nonLaying', 'sold', 'deceased'),
     defaultValue: 'active'
   },
-  breed: {  // Legacy, but use breedId now
+  breed: {
     type: DataTypes.STRING,
     allowNull: false
   },
