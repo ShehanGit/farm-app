@@ -7,6 +7,7 @@ router.get('/', auth, eggHatchingController.getEggHatchings);
 router.post('/', auth, eggHatchingController.addEggHatching);
 router.put('/:id', auth, eggHatchingController.updateEggHatching);
 router.delete('/:id', auth, eggHatchingController.deleteEggHatching);
-router.get('/upcoming', auth, eggHatchingController.getUpcomingHatches);  // New for reminders
+router.get('/upcoming', auth, eggHatchingController.getUpcomingHatches);
+router.get('/:id/status', auth, eggHatchingController.getHatchingStatus);  // New for graphs/charts
 
 module.exports = router;

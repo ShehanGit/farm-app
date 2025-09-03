@@ -1,9 +1,9 @@
-const { EggHatching, AnimalBatch } = require('../models');
+const { EggHatching, AnimalBatch, Breed } = require('../models');
 const { Op } = require('sequelize');
 
 exports.getEggHatchings = async (req, res) => {
   try {
-    const hatchings = await EggHatching.findAll({ include: [AnimalBatch] });
+    const hatchings = await EggHatching.findAll({ include: [AnimalBatch, Breed] });
     // Summary for graphs: Avg hatchability, success stats
     const totalHatched = hatchings.reduce((sum, h) => sum + h.hatched_count, 0);
     const avgHatchability = hatchings.length ? (hatchings.reduce((sum, h) => sum + h.hatchability_rate, 0) / hatchings.length).toFixed(2) : 0;
@@ -27,14 +27,17 @@ exports.updateEggHatching = async (req, res) => {
   try {
     const [updated] = await EggHatching.update(req.body, { where: { id } });
     if (updated) {
-      const updatedHatching = await EggHatching.findByPk(id, { include: [AnimalBatch] });
-      // Auto-calc hatchability if hatched_count provided
+      const updatedHatching = await EggHatching.findByPk(id, { include: [AnimalBatch, Breed] });
+      // Auto-calc hatchability
       if (updatedHatching.hatched_count > 0) {
         const rate = (updatedHatching.hatched_count / updatedHatching.number_of_eggs) || 0;
         await updatedHatching.update({ hatchability_rate: rate });
       }
-      // Update status if hatched
-      if (req.body.status === 'hatched') {
+      // Update status based on dates
+      const daysLeft = Math.ceil((new Date(updatedHatching.hatch_date) - new Date()) / (1000 * 60 * 60 * 24));
+      if (daysLeft <= updatedHatching.Breed.lockdownPeriodDays && updatedHatching.status === 'incubating') {
+        await updatedHatching.update({ status: 'lockdown' });
+      } else if (daysLeft <= 0 && updatedHatching.status !== 'hatched') {
         await updatedHatching.update({ status: 'hatched' });
       }
       res.json(updatedHatching);
@@ -60,7 +63,7 @@ exports.deleteEggHatching = async (req, res) => {
   }
 };
 
-exports.getUpcomingHatches = async (req, res) => {  // New: Reminders for near hatch dates
+exports.getUpcomingHatches = async (req, res) => {
   try {
     const today = new Date();
     const nextWeek = new Date(today);
@@ -68,11 +71,35 @@ exports.getUpcomingHatches = async (req, res) => {  // New: Reminders for near h
     const upcoming = await EggHatching.findAll({
       where: {
         hatch_date: { [Op.between]: [today, nextWeek] },
-        status: 'incubating'
+        status: { [Op.in]: ['incubating', 'lockdown'] }
       },
-      include: [AnimalBatch]
+      include: [AnimalBatch, Breed]
     });
     res.json(upcoming);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+exports.getHatchingStatus = async (req, res) => {  // New: For graphs/charts
+  const { id } = req.params;
+  try {
+    const hatching = await EggHatching.findByPk(id, { include: [Breed] });
+    if (!hatching) return res.status(404).json({ msg: 'Hatching batch not found' });
+    const daysToHatch = Math.ceil((new Date(hatching.hatch_date) - new Date(hatching.hatch_started_day)) / (1000 * 60 * 60 * 24));
+    const daysLeft = Math.max(0, Math.ceil((new Date(hatching.hatch_date) - new Date()) / (1000 * 60 * 60 * 24)));
+    const isLockdown = daysLeft <= hatching.Breed.lockdownPeriodDays;
+    const timeline = {
+      totalDuration: hatching.Breed.hatchDurationDays,
+      daysElapsed: hatching.Breed.hatchDurationDays - daysLeft,
+      stages: {
+        storage: hatching.storageDurationDays,
+        incubation: daysToHatch - hatching.Breed.lockdownPeriodDays,
+        lockdown: hatching.Breed.lockdownPeriodDays,
+        hatched: hatching.status === 'hatched' ? 'Completed' : 'Pending'
+      }
+    };
+    res.json({ hatching, status: { daysLeft, isLockdown, timeline } });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

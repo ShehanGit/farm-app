@@ -7,7 +7,11 @@ const EggHatching = sequelize.define('EggHatching', {
     autoIncrement: true,
     primaryKey: true
   },
-  batchId: {  // New: Link to AnimalBatch for source
+  batchId: {
+    type: DataTypes.INTEGER,
+    allowNull: false
+  },
+  breedId: {  // New: Breed egg belongs to
     type: DataTypes.INTEGER,
     allowNull: false
   },
@@ -19,37 +23,66 @@ const EggHatching = sequelize.define('EggHatching', {
     type: DataTypes.INTEGER,
     allowNull: false
   },
+  hatch_started_day: {  // New: Incubation start
+    type: DataTypes.DATE,
+    allowNull: false
+  },
   hatch_date: {
     type: DataTypes.DATE,
     allowNull: false
   },
-  hatched_count: {  // New: For hatchability calc
+  hatched_count: {
     type: DataTypes.INTEGER,
     defaultValue: 0
   },
-  hatchability_rate: {  // Auto-calculated
+  hatchability_rate: {
     type: DataTypes.FLOAT,
     defaultValue: 0
   },
-  incubationMethod: {  // New: Enum for types
+  incubationMethod: {
     type: DataTypes.ENUM('natural', 'artificial', 'custom'),
     defaultValue: 'artificial'
   },
-  temperatureLog: {  // New: JSON for daily readings
-    type: DataTypes.JSON  // e.g., [{date: "2025-09-01", temp: 37.5}]
+  temperatureLog: {
+    type: DataTypes.JSON
   },
-  storageDurationDays: {  // New: Pre-incubation storage
+  humidityLog: {  // Essential: JSON for readings
+    type: DataTypes.JSON
+  },
+  eggTurnLog: {  // Essential: JSON for turning counts
+    type: DataTypes.JSON  // e.g., [{date: "2025-09-01", turns: 3}]
+  },
+  fertilityCheckDate: {  // Essential: Candling date
+    type: DataTypes.DATE
+  },
+  storageDurationDays: {
     type: DataTypes.INTEGER,
     defaultValue: 0
   },
-  chickQualityNotes: {  // New: Quality assessment
+  machine_code: {  // New: Hatching machine code
+    type: DataTypes.STRING
+  },
+  tray_number: {  // New: Tray location
+    type: DataTypes.STRING
+  },
+  eggSource: {  // Essential: 'own farm', 'purchased'
+    type: DataTypes.ENUM('ownFarm', 'purchased', 'other'),
+    defaultValue: 'ownFarm'
+  },
+  chickQualityNotes: {
     type: DataTypes.TEXT
   },
-  failureReasons: {  // New: JSON for issues
-    type: DataTypes.JSON  // e.g., ["infertile", "temperature fluctuation"]
+  failureReasons: {
+    type: DataTypes.JSON
   },
-  status: {  // Improved: Enum
-    type: DataTypes.ENUM('incubating', 'hatched', 'failed'),
+  failureAnalysis: {  // Essential: Text summary
+    type: DataTypes.TEXT
+  },
+  hatchSuccessMetrics: {  // Essential: JSON for viability
+    type: DataTypes.JSON  // e.g., {viableChicks: 800, weak: 50}
+  },
+  status: {
+    type: DataTypes.ENUM('stored', 'incubating', 'lockdown', 'hatched', 'failed'),
     defaultValue: 'incubating'
   },
   notes: {

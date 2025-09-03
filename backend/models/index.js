@@ -77,6 +77,9 @@ AnimalBatch.hasMany(Quail, { as: 'ChildrenQuails', foreignKey: 'parentBatchId' }
 Duck.belongsTo(AnimalBatch, { as: 'ParentBatch', foreignKey: 'parentBatchId' });
 AnimalBatch.hasMany(Duck, { as: 'ChildrenDucks', foreignKey: 'parentBatchId' });
 
+EggHatching.belongsTo(Breed, { foreignKey: 'breedId' });
+Breed.hasMany(EggHatching, { foreignKey: 'breedId' });
+
 AnimalBatch.hasMany(EggProductionLog, { foreignKey: 'batchId' });
 EggProductionLog.belongsTo(AnimalBatch, { foreignKey: 'batchId' });
 
@@ -113,6 +116,8 @@ BiosecurityLog.belongsTo(AnimalBatch, { foreignKey: 'batchId' });
 AnimalBatch.hasMany(EggHatching, { foreignKey: 'batchId' });
 EggHatching.belongsTo(AnimalBatch, { foreignKey: 'batchId' });
 
+
+
 const syncDatabase = async () => {
   try {
     await sequelize.sync({ alter: true });
@@ -147,5 +152,6 @@ module.exports = {
   Income,
   LegRing,
   BiosecurityLog,
+  EggHatching,
   EggHatching
 };
