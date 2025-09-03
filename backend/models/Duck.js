@@ -7,17 +7,6 @@ const Duck = sequelize.define('Duck', {
     autoIncrement: true,
     primaryKey: true
   },
-  animalId: {
-    type: DataTypes.INTEGER,
-    allowNull: false
-  },
-  batchId: {
-    type: DataTypes.INTEGER
-  },
-  breedId: {
-    type: DataTypes.INTEGER,
-    allowNull: false
-  },
   parentBatchId: {
     type: DataTypes.INTEGER
   },

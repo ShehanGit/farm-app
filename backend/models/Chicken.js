@@ -7,17 +7,6 @@ const Chicken = sequelize.define('Chicken', {
     autoIncrement: true,
     primaryKey: true
   },
-  animalId: {
-    type: DataTypes.INTEGER,
-    allowNull: false
-  },
-  batchId: {  // New: Link to AnimalBatch for separation
-    type: DataTypes.INTEGER
-  },
-  breedId: {
-    type: DataTypes.INTEGER,
-    allowNull: false
-  },
   parentBatchId: {
     type: DataTypes.INTEGER
   },
@@ -47,7 +36,7 @@ const Chicken = sequelize.define('Chicken', {
   },
   breed: {
     type: DataTypes.STRING,
-    allowNull: false
+    allowNull: true
   },
   laying_rate: {
     type: DataTypes.INTEGER,

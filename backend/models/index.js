@@ -24,50 +24,50 @@ const BiosecurityLog = require('./BiosecurityLog');
 const Incubator = require('./Incubator');
 const FeedType = require('./FeedType');
 
-// Associations (previous + new for Quail/Duck mirroring Chicken)
-Animal.hasMany(AnimalBatch, { foreignKey: 'animalId' });
+// Associations
+Animal.hasMany(AnimalBatch, { foreignKey: 'animalId', onDelete: 'CASCADE' });
 AnimalBatch.belongsTo(Animal, { foreignKey: 'animalId' });
 
-Animal.hasMany(EggHatching, { foreignKey: 'animalId' });
+Animal.hasMany(EggHatching, { foreignKey: 'animalId', onDelete: 'CASCADE' });
 EggHatching.belongsTo(Animal, { foreignKey: 'animalId' });
 
-Animal.hasMany(Vaccination, { foreignKey: 'animalId' });
+Animal.hasMany(Vaccination, { foreignKey: 'animalId', onDelete: 'CASCADE' });
 Vaccination.belongsTo(Animal, { foreignKey: 'animalId' });
 
-Animal.hasMany(Chicken, { foreignKey: 'animalId' });
+Animal.hasMany(Chicken, { foreignKey: 'animalId', onDelete: 'CASCADE' });
 Chicken.belongsTo(Animal, { foreignKey: 'animalId' });
 
-Animal.hasMany(Quail, { foreignKey: 'animalId' });
+Animal.hasMany(Quail, { foreignKey: 'animalId', onDelete: 'CASCADE' });
 Quail.belongsTo(Animal, { foreignKey: 'animalId' });
 
-Animal.hasMany(Duck, { foreignKey: 'animalId' });
+Animal.hasMany(Duck, { foreignKey: 'animalId', onDelete: 'CASCADE' });
 Duck.belongsTo(Animal, { foreignKey: 'animalId' });
 
-Chicken.belongsTo(Breed, { foreignKey: 'breedId' });
+Chicken.belongsTo(Breed, { foreignKey: 'breedId', onDelete: 'CASCADE' });
 Breed.hasMany(Chicken, { foreignKey: 'breedId' });
 
-Quail.belongsTo(Breed, { foreignKey: 'breedId' });
+Quail.belongsTo(Breed, { foreignKey: 'breedId', onDelete: 'CASCADE' });
 Breed.hasMany(Quail, { foreignKey: 'breedId' });
 
-Duck.belongsTo(Breed, { foreignKey: 'breedId' });
+Duck.belongsTo(Breed, { foreignKey: 'breedId', onDelete: 'CASCADE' });
 Breed.hasMany(Duck, { foreignKey: 'breedId' });
 
-Chicken.hasMany(LifeEvent, { foreignKey: 'chickenId' });
+Chicken.hasMany(LifeEvent, { foreignKey: 'chickenId', onDelete: 'CASCADE' });
 LifeEvent.belongsTo(Chicken, { foreignKey: 'chickenId' });
 
-Quail.hasMany(LifeEvent, { foreignKey: 'quailId' });
+Quail.hasMany(LifeEvent, { foreignKey: 'quailId', onDelete: 'CASCADE' });
 LifeEvent.belongsTo(Quail, { foreignKey: 'quailId' });
 
-Duck.hasMany(LifeEvent, { foreignKey: 'duckId' });
+Duck.hasMany(LifeEvent, { foreignKey: 'duckId', onDelete: 'CASCADE' });
 LifeEvent.belongsTo(Duck, { foreignKey: 'duckId' });
 
-Chicken.hasMany(WeightRecord, { foreignKey: 'chickenId' });
+Chicken.hasMany(WeightRecord, { foreignKey: 'chickenId', onDelete: 'CASCADE' });
 WeightRecord.belongsTo(Chicken, { foreignKey: 'chickenId' });
 
-Quail.hasMany(WeightRecord, { foreignKey: 'quailId' });
+Quail.hasMany(WeightRecord, { foreignKey: 'quailId', onDelete: 'CASCADE' });
 WeightRecord.belongsTo(Quail, { foreignKey: 'quailId' });
 
-Duck.hasMany(WeightRecord, { foreignKey: 'duckId' });
+Duck.hasMany(WeightRecord, { foreignKey: 'duckId', onDelete: 'CASCADE' });
 WeightRecord.belongsTo(Duck, { foreignKey: 'duckId' });
 
 Chicken.belongsTo(AnimalBatch, { as: 'ParentBatch', foreignKey: 'parentBatchId' });
@@ -79,59 +79,40 @@ AnimalBatch.hasMany(Quail, { as: 'ChildrenQuails', foreignKey: 'parentBatchId' }
 Duck.belongsTo(AnimalBatch, { as: 'ParentBatch', foreignKey: 'parentBatchId' });
 AnimalBatch.hasMany(Duck, { as: 'ChildrenDucks', foreignKey: 'parentBatchId' });
 
-EggHatching.belongsTo(Breed, { foreignKey: 'breedId' });
-Breed.hasMany(EggHatching, { foreignKey: 'breedId' });
-
-AnimalBatch.hasMany(EggProductionLog, { foreignKey: 'batchId' });
+AnimalBatch.hasMany(EggProductionLog, { foreignKey: 'batchId', onDelete: 'CASCADE' });
 EggProductionLog.belongsTo(AnimalBatch, { foreignKey: 'batchId' });
 
-AnimalBatch.hasMany(FeedConsumptionLog, { foreignKey: 'batchId' });
+AnimalBatch.hasMany(FeedConsumptionLog, { foreignKey: 'batchId', onDelete: 'CASCADE' });
 FeedConsumptionLog.belongsTo(AnimalBatch, { foreignKey: 'batchId' });
 
-AnimalBatch.hasMany(BatchVaccination, { foreignKey: 'batchId' });
+AnimalBatch.hasMany(BatchVaccination, { foreignKey: 'batchId', onDelete: 'CASCADE' });
 BatchVaccination.belongsTo(AnimalBatch, { foreignKey: 'batchId' });
 
-AnimalBatch.hasMany(SupplementLog, { foreignKey: 'batchId' });
+AnimalBatch.hasMany(SupplementLog, { foreignKey: 'batchId', onDelete: 'CASCADE' });
 SupplementLog.belongsTo(AnimalBatch, { foreignKey: 'batchId' });
 
-AnimalBatch.hasMany(Expense, { foreignKey: 'batchId' });
+AnimalBatch.hasMany(Expense, { foreignKey: 'batchId', onDelete: 'CASCADE' });
 Expense.belongsTo(AnimalBatch, { foreignKey: 'batchId' });
 
-AnimalBatch.hasMany(Income, { foreignKey: 'batchId' });
+AnimalBatch.hasMany(Income, { foreignKey: 'batchId', onDelete: 'CASCADE' });
 Income.belongsTo(AnimalBatch, { foreignKey: 'batchId' });
 
-AnimalBatch.hasMany(Chicken, { foreignKey: 'batchId' });
+AnimalBatch.hasMany(Chicken, { foreignKey: 'batchId', onDelete: 'CASCADE' });
 Chicken.belongsTo(AnimalBatch, { foreignKey: 'batchId' });
 
-AnimalBatch.hasMany(Quail, { foreignKey: 'batchId' });
+AnimalBatch.hasMany(Quail, { foreignKey: 'batchId', onDelete: 'CASCADE' });
 Quail.belongsTo(AnimalBatch, { foreignKey: 'batchId' });
 
-AnimalBatch.hasMany(Duck, { foreignKey: 'batchId' });
+AnimalBatch.hasMany(Duck, { foreignKey: 'batchId', onDelete: 'CASCADE' });
 Duck.belongsTo(AnimalBatch, { foreignKey: 'batchId' });
 
-AnimalBatch.hasMany(LegRing, { foreignKey: 'batchId' });
+AnimalBatch.hasMany(LegRing, { foreignKey: 'batchId', onDelete: 'CASCADE' });
 LegRing.belongsTo(AnimalBatch, { foreignKey: 'batchId' });
 
-AnimalBatch.hasMany(BiosecurityLog, { foreignKey: 'batchId' });
+AnimalBatch.hasMany(BiosecurityLog, { foreignKey: 'batchId', onDelete: 'CASCADE' });
 BiosecurityLog.belongsTo(AnimalBatch, { foreignKey: 'batchId' });
 
-AnimalBatch.hasMany(EggHatching, { foreignKey: 'batchId' });
-EggHatching.belongsTo(AnimalBatch, { foreignKey: 'batchId' });
-
-EggHatching.belongsTo(Incubator, { foreignKey: 'incubatorId' });
-Incubator.hasMany(EggHatching, { foreignKey: 'incubatorId' });
-
-FeedType.hasMany(Inventory, { foreignKey: 'feedTypeId' });
-Inventory.belongsTo(FeedType, { foreignKey: 'feedTypeId' });
-
-FeedType.hasMany(FeedConsumptionLog, { foreignKey: 'feedTypeId' });
-FeedConsumptionLog.belongsTo(FeedType, { foreignKey: 'feedTypeId' });
-
-Inventory.hasMany(FeedConsumptionLog, { foreignKey: 'inventoryId' });
-FeedConsumptionLog.belongsTo(Inventory, { foreignKey: 'inventoryId' });
-
-
-
+// Sync
 const syncDatabase = async () => {
   try {
     await sequelize.sync({ alter: true });
@@ -165,10 +146,5 @@ module.exports = {
   Expense,
   Income,
   LegRing,
-  BiosecurityLog,
-  EggHatching,
-  EggHatching,
-  Incubator,
-  FeedType  
-
+  BiosecurityLog
 };
