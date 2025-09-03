@@ -39,7 +39,11 @@ const Inventory = sequelize.define('Inventory', {
   },
   notes: {
     type: DataTypes.TEXT
-  }
+  },
+    isDepleted: {  // New: Flag when stockRemainingKg <= 0
+    type: DataTypes.BOOLEAN,
+    defaultValue: false
+  },
 });
 
 module.exports = Inventory;
