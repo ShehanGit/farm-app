@@ -13,10 +13,14 @@ const Vaccination = require('./Vaccination');
 const Breed = require('./Breed');
 const LifeEvent = require('./LifeEvent');
 const WeightRecord = require('./WeightRecord');
-const EggProductionLog = require('./EggProductionLog');  // New
-const FeedConsumptionLog = require('./FeedConsumptionLog');  // New
+const EggProductionLog = require('./EggProductionLog');
+const FeedConsumptionLog = require('./FeedConsumptionLog');
+const BatchVaccination = require('./BatchVaccination');  // New
+const SupplementLog = require('./SupplementLog');  // New
+const Expense = require('./Expense');  // New
+const Income = require('./Income');  // New
 
-// Associations
+// Associations (previous + new for batch connections)
 Animal.hasMany(AnimalBatch, { foreignKey: 'animalId' });
 AnimalBatch.belongsTo(Animal, { foreignKey: 'animalId' });
 
@@ -44,18 +48,29 @@ LifeEvent.belongsTo(Chicken, { foreignKey: 'chickenId' });
 Chicken.hasMany(WeightRecord, { foreignKey: 'chickenId' });
 WeightRecord.belongsTo(Chicken, { foreignKey: 'chickenId' });
 
-// Batch Lineage
 Chicken.belongsTo(AnimalBatch, { as: 'ParentBatch', foreignKey: 'parentBatchId' });
 AnimalBatch.hasMany(Chicken, { as: 'ChildrenChickens', foreignKey: 'parentBatchId' });
 
-// New Batch Connections for Separation/Practical Tracking
+// New for improved batch features/separation
 AnimalBatch.hasMany(EggProductionLog, { foreignKey: 'batchId' });
 EggProductionLog.belongsTo(AnimalBatch, { foreignKey: 'batchId' });
 
 AnimalBatch.hasMany(FeedConsumptionLog, { foreignKey: 'batchId' });
 FeedConsumptionLog.belongsTo(AnimalBatch, { foreignKey: 'batchId' });
 
-AnimalBatch.hasMany(Chicken, { foreignKey: 'batchId' });  // New: Chickens belong to batches for separation
+AnimalBatch.hasMany(BatchVaccination, { foreignKey: 'batchId' });
+BatchVaccination.belongsTo(AnimalBatch, { foreignKey: 'batchId' });
+
+AnimalBatch.hasMany(SupplementLog, { foreignKey: 'batchId' });
+SupplementLog.belongsTo(AnimalBatch, { foreignKey: 'batchId' });
+
+AnimalBatch.hasMany(Expense, { foreignKey: 'batchId' });
+Expense.belongsTo(AnimalBatch, { foreignKey: 'batchId' });
+
+AnimalBatch.hasMany(Income, { foreignKey: 'batchId' });
+Income.belongsTo(AnimalBatch, { foreignKey: 'batchId' });
+
+AnimalBatch.hasMany(Chicken, { foreignKey: 'batchId' });
 Chicken.belongsTo(AnimalBatch, { foreignKey: 'batchId' });
 
 const syncDatabase = async () => {
@@ -84,6 +99,10 @@ module.exports = {
   Breed,
   LifeEvent,
   WeightRecord,
-  EggProductionLog,  // New
-  FeedConsumptionLog  // New
+  EggProductionLog,
+  FeedConsumptionLog,
+  BatchVaccination,
+  SupplementLog,
+  Expense,
+  Income
 };
