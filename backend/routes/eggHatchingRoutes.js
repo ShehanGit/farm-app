@@ -7,5 +7,6 @@ router.get('/', auth, eggHatchingController.getEggHatchings);
 router.post('/', auth, eggHatchingController.addEggHatching);
 router.put('/:id', auth, eggHatchingController.updateEggHatching);
 router.delete('/:id', auth, eggHatchingController.deleteEggHatching);
+router.get('/upcoming', auth, eggHatchingController.getUpcomingHatches);  // New for reminders
 
 module.exports = router;

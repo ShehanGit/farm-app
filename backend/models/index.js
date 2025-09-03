@@ -4,7 +4,7 @@ const Crop = require('./Crop');
 const Inventory = require('./Inventory');
 const Log = require('./Log');
 const User = require('./User');
-const EggHatching = require('./EggHatching');
+const EggHatching = require('./EggHatching');  // Keep only this one
 const AnimalBatch = require('./AnimalBatch');
 const Chicken = require('./Chicken');
 const Quail = require('./Quail');
@@ -19,10 +19,10 @@ const BatchVaccination = require('./BatchVaccination');
 const SupplementLog = require('./SupplementLog');
 const Expense = require('./Expense');
 const Income = require('./Income');
-const LegRing = require('./LegRing');  // New
-const BiosecurityLog = require('./BiosecurityLog');  // New
+const LegRing = require('./LegRing');
+const BiosecurityLog = require('./BiosecurityLog');
 
-// Associations (previous + new)
+// Associations (previous + new for Quail/Duck mirroring Chicken)
 Animal.hasMany(AnimalBatch, { foreignKey: 'animalId' });
 AnimalBatch.belongsTo(Animal, { foreignKey: 'animalId' });
 
@@ -44,14 +44,38 @@ Duck.belongsTo(Animal, { foreignKey: 'animalId' });
 Chicken.belongsTo(Breed, { foreignKey: 'breedId' });
 Breed.hasMany(Chicken, { foreignKey: 'breedId' });
 
+Quail.belongsTo(Breed, { foreignKey: 'breedId' });
+Breed.hasMany(Quail, { foreignKey: 'breedId' });
+
+Duck.belongsTo(Breed, { foreignKey: 'breedId' });
+Breed.hasMany(Duck, { foreignKey: 'breedId' });
+
 Chicken.hasMany(LifeEvent, { foreignKey: 'chickenId' });
 LifeEvent.belongsTo(Chicken, { foreignKey: 'chickenId' });
+
+Quail.hasMany(LifeEvent, { foreignKey: 'quailId' });
+LifeEvent.belongsTo(Quail, { foreignKey: 'quailId' });
+
+Duck.hasMany(LifeEvent, { foreignKey: 'duckId' });
+LifeEvent.belongsTo(Duck, { foreignKey: 'duckId' });
 
 Chicken.hasMany(WeightRecord, { foreignKey: 'chickenId' });
 WeightRecord.belongsTo(Chicken, { foreignKey: 'chickenId' });
 
+Quail.hasMany(WeightRecord, { foreignKey: 'quailId' });
+WeightRecord.belongsTo(Quail, { foreignKey: 'quailId' });
+
+Duck.hasMany(WeightRecord, { foreignKey: 'duckId' });
+WeightRecord.belongsTo(Duck, { foreignKey: 'duckId' });
+
 Chicken.belongsTo(AnimalBatch, { as: 'ParentBatch', foreignKey: 'parentBatchId' });
 AnimalBatch.hasMany(Chicken, { as: 'ChildrenChickens', foreignKey: 'parentBatchId' });
+
+Quail.belongsTo(AnimalBatch, { as: 'ParentBatch', foreignKey: 'parentBatchId' });
+AnimalBatch.hasMany(Quail, { as: 'ChildrenQuails', foreignKey: 'parentBatchId' });
+
+Duck.belongsTo(AnimalBatch, { as: 'ParentBatch', foreignKey: 'parentBatchId' });
+AnimalBatch.hasMany(Duck, { as: 'ChildrenDucks', foreignKey: 'parentBatchId' });
 
 AnimalBatch.hasMany(EggProductionLog, { foreignKey: 'batchId' });
 EggProductionLog.belongsTo(AnimalBatch, { foreignKey: 'batchId' });
@@ -74,12 +98,20 @@ Income.belongsTo(AnimalBatch, { foreignKey: 'batchId' });
 AnimalBatch.hasMany(Chicken, { foreignKey: 'batchId' });
 Chicken.belongsTo(AnimalBatch, { foreignKey: 'batchId' });
 
-// New associations
-Chicken.hasMany(LegRing, { foreignKey: 'chickenId' });
-LegRing.belongsTo(Chicken, { foreignKey: 'chickenId' });
+AnimalBatch.hasMany(Quail, { foreignKey: 'batchId' });
+Quail.belongsTo(AnimalBatch, { foreignKey: 'batchId' });
+
+AnimalBatch.hasMany(Duck, { foreignKey: 'batchId' });
+Duck.belongsTo(AnimalBatch, { foreignKey: 'batchId' });
+
+AnimalBatch.hasMany(LegRing, { foreignKey: 'batchId' });
+LegRing.belongsTo(AnimalBatch, { foreignKey: 'batchId' });
 
 AnimalBatch.hasMany(BiosecurityLog, { foreignKey: 'batchId' });
 BiosecurityLog.belongsTo(AnimalBatch, { foreignKey: 'batchId' });
+
+AnimalBatch.hasMany(EggHatching, { foreignKey: 'batchId' });
+EggHatching.belongsTo(AnimalBatch, { foreignKey: 'batchId' });
 
 const syncDatabase = async () => {
   try {
@@ -113,6 +145,7 @@ module.exports = {
   SupplementLog,
   Expense,
   Income,
-  LegRing,  // New
-  BiosecurityLog  // New
+  LegRing,
+  BiosecurityLog,
+  EggHatching
 };

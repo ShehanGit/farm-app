@@ -7,5 +7,6 @@ router.get('/', auth, duckController.getDucks);
 router.post('/', auth, duckController.addDuck);
 router.put('/:id', auth, duckController.updateDuck);
 router.delete('/:id', auth, duckController.deleteDuck);
+router.get('/:id/lineage', auth, duckController.getLineage);  // Added for lineage
 
 module.exports = router;
