@@ -11,16 +11,20 @@ const FeedConsumptionLog = sequelize.define('FeedConsumptionLog', {
     type: DataTypes.INTEGER,
     allowNull: false
   },
+  inventoryId: {  // New: Link to Inventory for deduct
+    type: DataTypes.INTEGER
+  },
   logDate: {
     type: DataTypes.DATE,
     allowNull: false
   },
   feedAmountKg: {
     type: DataTypes.FLOAT,
-    allowNull: false  // Manual total consumed
+    allowNull: false
   },
-  feedType: {
-    type: DataTypes.STRING  // e.g., 'organic grain'
+  feedTypeId: {
+    type: DataTypes.INTEGER,
+    allowNull: false
   },
   costLKR: {
     type: DataTypes.FLOAT

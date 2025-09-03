@@ -33,6 +33,9 @@ const expenseRoutes = require('./routes/expenseRoutes');
 const incomeRoutes = require('./routes/incomeRoutes');
 const legRingRoutes = require('./routes/legRingRoutes');
 const biosecurityLogRoutes = require('./routes/biosecurityLogRoutes');
+const incubatorRoutes = require('./routes/incubatorRoutes');
+const feedTypeRoutes = require('./routes/feedTypeRoutes');
+const analyticsRoutes = require('./routes/analyticsRoutes');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/animals', animalRoutes);
@@ -56,6 +59,10 @@ app.use('/api/expenses', expenseRoutes);
 app.use('/api/incomes', incomeRoutes);
 app.use('/api/leg-rings', legRingRoutes);
 app.use('/api/biosecurity-logs', biosecurityLogRoutes);
+app.use('/api/incubators', incubatorRoutes);
+app.use('/api/feed-types', feedTypeRoutes);
+app.use('/api/analytics', analyticsRoutes);
+
 
 // Sync DB and start server
 const PORT = process.env.PORT || 5000;

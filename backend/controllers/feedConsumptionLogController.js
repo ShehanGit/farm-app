@@ -55,6 +55,28 @@ exports.updateFeedConsumptionLog = async (req, res) => {
   }
 };
 
+// ... existing code ...
+
+exports.addFeedConsumptionLog = async (req, res) => {
+  const { inventoryId, feedAmountKg, ...body } = req.body;
+  try {
+    const log = await FeedConsumptionLog.create({ ...body, inventoryId, feedAmountKg });
+    // Optional auto-deduct from inventory if linked
+    if (inventoryId) {
+      const inventory = await Inventory.findByPk(inventoryId);
+      if (inventory) {
+        const newStock = inventory.stockRemainingKg - feedAmountKg;
+        await inventory.update({ stockRemainingKg: newStock });
+      }
+    }
+    res.status(201).json(log);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// ... rest same ...
+
 exports.deleteFeedConsumptionLog = async (req, res) => {
   const { id } = req.params;
   try {

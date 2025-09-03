@@ -9,5 +9,6 @@ router.put('/:id', auth, eggHatchingController.updateEggHatching);
 router.delete('/:id', auth, eggHatchingController.deleteEggHatching);
 router.get('/upcoming', auth, eggHatchingController.getUpcomingHatches);
 router.get('/:id/status', auth, eggHatchingController.getHatchingStatus);  // New for graphs/charts
+router.put('/:id/remove-eggs', auth, eggHatchingController.removeEggs);
 
 module.exports = router;

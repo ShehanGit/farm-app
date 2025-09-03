@@ -9,7 +9,7 @@ const EggProductionLog = sequelize.define('EggProductionLog', {
   },
   batchId: {
     type: DataTypes.INTEGER,
-    allowNull: false  // Link to AnimalBatch
+    allowNull: false
   },
   logDate: {
     type: DataTypes.DATE,
@@ -17,10 +17,14 @@ const EggProductionLog = sequelize.define('EggProductionLog', {
   },
   eggCount: {
     type: DataTypes.INTEGER,
-    allowNull: false  // Manual daily total
+    allowNull: false  // Auto-sum from eggDetails
+  },
+  eggDetails: {  // New: JSON for sizes/characteristics
+    type: DataTypes.JSON,  // e.g., {sizes: {small: 10, medium: 20, large: 15, jumbo: 5, other: 2}, characteristics: {cracked: 5, dirty: 3, thinShell: 1, oddShape: 2, doubleYolk: 4, clean: 30, normal: 20, other: 1}}
+    defaultValue: {}
   },
   qualityNotes: {
-    type: DataTypes.TEXT  // e.g., 'High quality, no cracks'
+    type: DataTypes.TEXT
   }
 });
 

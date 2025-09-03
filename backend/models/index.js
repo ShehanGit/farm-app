@@ -21,6 +21,8 @@ const Expense = require('./Expense');
 const Income = require('./Income');
 const LegRing = require('./LegRing');
 const BiosecurityLog = require('./BiosecurityLog');
+const Incubator = require('./Incubator');
+const FeedType = require('./FeedType');
 
 // Associations (previous + new for Quail/Duck mirroring Chicken)
 Animal.hasMany(AnimalBatch, { foreignKey: 'animalId' });
@@ -116,6 +118,18 @@ BiosecurityLog.belongsTo(AnimalBatch, { foreignKey: 'batchId' });
 AnimalBatch.hasMany(EggHatching, { foreignKey: 'batchId' });
 EggHatching.belongsTo(AnimalBatch, { foreignKey: 'batchId' });
 
+EggHatching.belongsTo(Incubator, { foreignKey: 'incubatorId' });
+Incubator.hasMany(EggHatching, { foreignKey: 'incubatorId' });
+
+FeedType.hasMany(Inventory, { foreignKey: 'feedTypeId' });
+Inventory.belongsTo(FeedType, { foreignKey: 'feedTypeId' });
+
+FeedType.hasMany(FeedConsumptionLog, { foreignKey: 'feedTypeId' });
+FeedConsumptionLog.belongsTo(FeedType, { foreignKey: 'feedTypeId' });
+
+Inventory.hasMany(FeedConsumptionLog, { foreignKey: 'inventoryId' });
+FeedConsumptionLog.belongsTo(Inventory, { foreignKey: 'inventoryId' });
+
 
 
 const syncDatabase = async () => {
@@ -153,5 +167,8 @@ module.exports = {
   LegRing,
   BiosecurityLog,
   EggHatching,
-  EggHatching
+  EggHatching,
+  Incubator,
+  FeedType  
+
 };

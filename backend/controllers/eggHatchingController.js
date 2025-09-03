@@ -81,6 +81,48 @@ exports.getUpcomingHatches = async (req, res) => {
   }
 };
 
+
+// ... existing code ...
+
+exports.updateEggHatching = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const [updated] = await EggHatching.update(req.body, { where: { id } });
+    if (updated) {
+      const updatedHatching = await EggHatching.findByPk(id, { include: [AnimalBatch, Breed, Incubator] });
+      // Auto-calc hatchability
+      if (updatedHatching.hatched_count > 0) {
+        const rate = (updatedHatching.hatched_count / updatedHatching.number_of_eggs) || 0;
+        await updatedHatching.update({ hatchability_rate: rate });
+      }
+      res.json(updatedHatching);
+    } else {
+      res.status(404).json({ msg: 'Hatching batch not found' });
+    }
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+exports.removeEggs = async (req, res) => {  // New: Change status for removed eggs
+  const { id } = req.params;
+  const { removedCount, reason } = req.body;
+  try {
+    const hatching = await EggHatching.findByPk(id);
+    if (!hatching) return res.status(404).json({ msg: 'Hatching batch not found' });
+    const newEggs = hatching.number_of_eggs - removedCount;
+    const removalEntry = { date: new Date(), removedCount, reason };
+    const removalLog = hatching.removalLog || [];
+    removalLog.push(removalEntry);
+    await hatching.update({ number_of_eggs: newEggs, removalLog });
+    res.json({ msg: 'Eggs removed', updatedHatching: hatching });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// ... existing getHatchingStatus for charts ...
+
 exports.getHatchingStatus = async (req, res) => {  // New: For graphs/charts
   const { id } = req.params;
   try {

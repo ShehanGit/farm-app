@@ -11,7 +11,11 @@ const EggHatching = sequelize.define('EggHatching', {
     type: DataTypes.INTEGER,
     allowNull: false
   },
-  breedId: {  // New: Breed egg belongs to
+  incubatorId: {  // New: Link to Incubator
+    type: DataTypes.INTEGER,
+    allowNull: false
+  },
+  breedId: {
     type: DataTypes.INTEGER,
     allowNull: false
   },
@@ -23,7 +27,7 @@ const EggHatching = sequelize.define('EggHatching', {
     type: DataTypes.INTEGER,
     allowNull: false
   },
-  hatch_started_day: {  // New: Incubation start
+  hatch_started_day: {
     type: DataTypes.DATE,
     allowNull: false
   },
@@ -46,26 +50,26 @@ const EggHatching = sequelize.define('EggHatching', {
   temperatureLog: {
     type: DataTypes.JSON
   },
-  humidityLog: {  // Essential: JSON for readings
+  humidityLog: {
     type: DataTypes.JSON
   },
-  eggTurnLog: {  // Essential: JSON for turning counts
-    type: DataTypes.JSON  // e.g., [{date: "2025-09-01", turns: 3}]
+  eggTurnLog: {
+    type: DataTypes.JSON
   },
-  fertilityCheckDate: {  // Essential: Candling date
+  fertilityCheckDate: {
     type: DataTypes.DATE
   },
   storageDurationDays: {
     type: DataTypes.INTEGER,
     defaultValue: 0
   },
-  machine_code: {  // New: Hatching machine code
+  machine_code: {
     type: DataTypes.STRING
   },
-  tray_number: {  // New: Tray location
+  tray_number: {
     type: DataTypes.STRING
   },
-  eggSource: {  // Essential: 'own farm', 'purchased'
+  eggSource: {
     type: DataTypes.ENUM('ownFarm', 'purchased', 'other'),
     defaultValue: 'ownFarm'
   },
@@ -75,11 +79,14 @@ const EggHatching = sequelize.define('EggHatching', {
   failureReasons: {
     type: DataTypes.JSON
   },
-  failureAnalysis: {  // Essential: Text summary
+  failureAnalysis: {
     type: DataTypes.TEXT
   },
-  hatchSuccessMetrics: {  // Essential: JSON for viability
-    type: DataTypes.JSON  // e.g., {viableChicks: 800, weak: 50}
+  hatchSuccessMetrics: {
+    type: DataTypes.JSON
+  },
+  removalLog: {  // New: JSON for removals (e.g., [{date, removedCount, reason}])
+    type: DataTypes.JSON
   },
   status: {
     type: DataTypes.ENUM('stored', 'incubating', 'lockdown', 'hatched', 'failed'),

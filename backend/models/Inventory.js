@@ -7,16 +7,38 @@ const Inventory = sequelize.define('Inventory', {
     autoIncrement: true,
     primaryKey: true
   },
-  item: {
-    type: DataTypes.STRING,
-    allowNull: false
-  },
-  quantity: {
+  feedTypeId: {  // New: Link to FeedType
     type: DataTypes.INTEGER,
     allowNull: false
   },
-  cost: {
-    type: DataTypes.FLOAT
+  item: {
+    type: DataTypes.STRING,
+    allowNull: false  // e.g., 'Chicken Feed Batch'
+  },
+  quantityKg: {
+    type: DataTypes.FLOAT,
+    allowNull: false
+  },
+  purchaseDate: {
+    type: DataTypes.DATE,
+    allowNull: false
+  },
+  pricePerKgLKR: {
+    type: DataTypes.FLOAT,
+    allowNull: false
+  },
+  totalCostLKR: {
+    type: DataTypes.FLOAT  // Auto-calc on add/update
+  },
+  supplier: {
+    type: DataTypes.STRING
+  },
+  stockRemainingKg: {
+    type: DataTypes.FLOAT,
+    defaultValue: 0  // Updated from usage
+  },
+  notes: {
+    type: DataTypes.TEXT
   }
 });
 
