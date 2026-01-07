@@ -10,27 +10,45 @@ const Harvest = sequelize.define('Harvest', {
   },
   cropId: {
     type: DataTypes.INTEGER,
-    allowNull: false
+    allowNull: false,
+    references: {
+      model: Crop,
+      key: 'id'
+    }
   },
   date: {
-    type: DataTypes.DATEONLY,
+    type: DataTypes.DATEONLY,  // Perfect for YYYY-MM-DD
     allowNull: false
   },
   quantityKg: {
     type: DataTypes.FLOAT,
-    allowNull: false
+    allowNull: false,
+    validate: {
+      min: 0
+    }
   },
-  grade: {
-    type: DataTypes.ENUM('A', 'B', 'C', 'Other'),
-    allowNull: true
+  grade: {  // Renamed from 'quality' → 'grade' to match common farming terms
+    type: DataTypes.ENUM('A', 'B', 'C', 'Reject'),
+    allowNull: true,
+    defaultValue: 'A'
   },
   notes: {
     type: DataTypes.TEXT,
     allowNull: true
   }
+}, {
+  timestamps: true,  // Adds createdAt & updatedAt automatically
+  tableName: 'Harvests'  // Optional: explicit table name
 });
 
-Crop.hasMany(Harvest, { foreignKey: 'cropId', onDelete: 'CASCADE' });
-Harvest.belongsTo(Crop, { foreignKey: 'cropId' });
+// Associations
+Crop.hasMany(Harvest, {
+  foreignKey: 'cropId',
+  onDelete: 'CASCADE'
+});
+Harvest.belongsTo(Crop, {
+  foreignKey: 'cropId',
+  as: 'Crop'  // This 'as' is important for include: ['Crop']
+});
 
 module.exports = Harvest;

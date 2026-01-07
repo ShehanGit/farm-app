@@ -1,82 +1,104 @@
 const express = require('express');
-const dotenv = require('dotenv');
 const cors = require('cors');
-const bodyParser = require('body-parser');
-const { syncDatabase } = require('./models');  // Auto-sync 
+const dotenv = require('dotenv');
+const { sequelize, syncDatabase } = require('./models');
 
-
+// Load environment variables
 dotenv.config();
 
 const app = express();
+
+// Middleware
 app.use(cors());
-app.use(bodyParser.json());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-// Routes
+// ==================== ROUTES ====================
+
+// Auth routes
 const authRoutes = require('./routes/authRoutes');
-const animalRoutes = require('./routes/animalRoutes');
-const cropRoutes = require('./routes/cropRoutes');
-const inventoryRoutes = require('./routes/inventoryRoutes');
-const logRoutes = require('./routes/logRoutes');
-const eggHatchingRoutes = require('./routes/eggHatchingRoutes');
-const animalBatchRoutes = require('./routes/animalBatchRoutes');
-const chickenRoutes = require('./routes/chickenRoutes');
-const quailRoutes = require('./routes/quailRoutes');
-const duckRoutes = require('./routes/duckRoutes');
-const vaccinationRoutes = require('./routes/vaccinationRoutes');
-const breedRoutes = require('./routes/breedRoutes');
-const lifeEventRoutes = require('./routes/lifeEventRoutes');
-const weightRecordRoutes = require('./routes/weightRecordRoutes');
-const eggProductionLogRoutes = require('./routes/eggProductionLogRoutes');
-const feedConsumptionLogRoutes = require('./routes/feedConsumptionLogRoutes');
-const batchVaccinationRoutes = require('./routes/batchVaccinationRoutes');
-const supplementLogRoutes = require('./routes/supplementLogRoutes');
-const expenseRoutes = require('./routes/expenseRoutes');
-const incomeRoutes = require('./routes/incomeRoutes');
-const legRingRoutes = require('./routes/legRingRoutes');
-const biosecurityLogRoutes = require('./routes/biosecurityLogRoutes');
-const incubatorRoutes = require('./routes/incubatorRoutes');
-const feedTypeRoutes = require('./routes/feedTypeRoutes');
-const analyticsRoutes = require('./routes/analyticsRoutes');
-const harvestRoutes = require('./routes/harvestRoutes');
-const saleRoutes = require('./routes/saleRoutes');
-const wastageRoutes = require('./routes/wastageRoutes');
-const stockRoutes = require('./routes/stockRoutes');
-const taskRoutes = require('./routes/taskRoutes');
-
 app.use('/api/auth', authRoutes);
-app.use('/api/animals', animalRoutes);
+
+// Crop routes
+const cropRoutes = require('./routes/cropRoutes');
 app.use('/api/crops', cropRoutes);
-app.use('/api/inventory', inventoryRoutes);
-app.use('/api/logs', logRoutes);
-app.use('/api/egg-hatchings', eggHatchingRoutes);
-app.use('/api/animal-batches', animalBatchRoutes);
-app.use('/api/chickens', chickenRoutes);
-app.use('/api/quails', quailRoutes);
-app.use('/api/ducks', duckRoutes);
-app.use('/api/vaccinations', vaccinationRoutes);
-app.use('/api/breeds', breedRoutes);
-app.use('/api/life-events', lifeEventRoutes);
-app.use('/api/weight-records', weightRecordRoutes);
-app.use('/api/egg-production-logs', eggProductionLogRoutes);
-app.use('/api/feed-consumption-logs', feedConsumptionLogRoutes);
-app.use('/api/batch-vaccinations', batchVaccinationRoutes);
-app.use('/api/supplement-logs', supplementLogRoutes);
-app.use('/api/expenses', expenseRoutes);
-app.use('/api/incomes', incomeRoutes);
-app.use('/api/leg-rings', legRingRoutes);
-app.use('/api/biosecurity-logs', biosecurityLogRoutes);
-app.use('/api/incubators', incubatorRoutes);
-app.use('/api/feed-types', feedTypeRoutes);
-app.use('/api/analytics', analyticsRoutes);
+
+// Harvest routes
+const harvestRoutes = require('./routes/harvestRoutes');
 app.use('/api/harvests', harvestRoutes);
+
+// Sale routes
+const saleRoutes = require('./routes/saleRoutes');
 app.use('/api/sales', saleRoutes);
-app.use('/api/wastages', wastageRoutes);
+
+// Stock routes
+const stockRoutes = require('./routes/stockRoutes');
 app.use('/api/stocks', stockRoutes);
+
+// Wastage routes
+const wastageRoutes = require('./routes/wastageRoutes');
+app.use('/api/wastages', wastageRoutes);
+
+// Inventory routes
+const inventoryRoutes = require('./routes/inventoryRoutes');
+app.use('/api/inventory', inventoryRoutes);
+
+// Analytics routes - IMPORTANT: Add this!
+const analyticsRoutes = require('./routes/analyticsRoutes');
+app.use('/api/analytics', analyticsRoutes);
+
+// Expense routes (if you have one)
+const expenseRoutes = require('./routes/expenseRoutes');
+app.use('/api/expenses', expenseRoutes);
+
+// Task routes (if you have one)
+const taskRoutes = require('./routes/taskRoutes');
 app.use('/api/tasks', taskRoutes);
 
+// Animal/Poultry routes (if you have them)
+// const animalRoutes = require('./routes/animalRoutes');
+// app.use('/api/animals', animalRoutes);
 
-// Sync DB and start server
-const PORT = process.env.PORT || 5000;
-syncDatabase().then(() => {
-  app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+// ==================== ERROR HANDLING ====================
+
+// 404 handler
+app.use((req, res) => {
+  res.status(404).json({ error: 'Route not found' });
 });
+
+// Global error handler
+app.use((err, req, res, next) => {
+  console.error('Error:', err);
+  res.status(500).json({ 
+    error: err.message || 'Internal server error',
+    stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
+  });
+});
+
+// ==================== SERVER START ====================
+
+const PORT = process.env.PORT || 5000;
+
+const startServer = async () => {
+  try {
+    // Test database connection
+    await sequelize.authenticate();
+    console.log('✅ Database connection established');
+    
+    // Sync database
+    await syncDatabase();
+    
+    // Start server
+    app.listen(PORT, () => {
+      console.log(`🚀 Server running on port ${PORT}`);
+      console.log(`API available at http://localhost:${PORT}/api`);
+    });
+  } catch (error) {
+    console.error('❌ Unable to start server:', error);
+    process.exit(1);
+  }
+};
+
+startServer();
+
+module.exports = app;

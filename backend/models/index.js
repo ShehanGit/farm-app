@@ -1,10 +1,12 @@
 const sequelize = require('../config/db');
+
+// Import all models
 const Animal = require('./Animal');
 const Crop = require('./Crop');
 const Inventory = require('./Inventory');
 const Log = require('./Log');
 const User = require('./User');
-const EggHatching = require('./EggHatching');  // Keep only this one
+const EggHatching = require('./EggHatching');
 const AnimalBatch = require('./AnimalBatch');
 const Chicken = require('./Chicken');
 const Quail = require('./Quail');
@@ -29,7 +31,8 @@ const Wastage = require('./Wastage');
 const Stock = require('./Stock');
 const Task = require('./Task');
 
-// Associations
+// ==================== ANIMAL ASSOCIATIONS ====================
+
 Animal.hasMany(AnimalBatch, { foreignKey: 'animalId', onDelete: 'CASCADE' });
 AnimalBatch.belongsTo(Animal, { foreignKey: 'animalId' });
 
@@ -48,6 +51,8 @@ Quail.belongsTo(Animal, { foreignKey: 'animalId' });
 Animal.hasMany(Duck, { foreignKey: 'animalId', onDelete: 'CASCADE' });
 Duck.belongsTo(Animal, { foreignKey: 'animalId' });
 
+// ==================== BREED ASSOCIATIONS ====================
+
 Chicken.belongsTo(Breed, { foreignKey: 'breedId', onDelete: 'CASCADE' });
 Breed.hasMany(Chicken, { foreignKey: 'breedId' });
 
@@ -56,6 +61,8 @@ Breed.hasMany(Quail, { foreignKey: 'breedId' });
 
 Duck.belongsTo(Breed, { foreignKey: 'breedId', onDelete: 'CASCADE' });
 Breed.hasMany(Duck, { foreignKey: 'breedId' });
+
+// ==================== LIFE EVENT ASSOCIATIONS ====================
 
 Chicken.hasMany(LifeEvent, { foreignKey: 'chickenId', onDelete: 'CASCADE' });
 LifeEvent.belongsTo(Chicken, { foreignKey: 'chickenId' });
@@ -66,6 +73,8 @@ LifeEvent.belongsTo(Quail, { foreignKey: 'quailId' });
 Duck.hasMany(LifeEvent, { foreignKey: 'duckId', onDelete: 'CASCADE' });
 LifeEvent.belongsTo(Duck, { foreignKey: 'duckId' });
 
+// ==================== WEIGHT RECORD ASSOCIATIONS ====================
+
 Chicken.hasMany(WeightRecord, { foreignKey: 'chickenId', onDelete: 'CASCADE' });
 WeightRecord.belongsTo(Chicken, { foreignKey: 'chickenId' });
 
@@ -75,6 +84,8 @@ WeightRecord.belongsTo(Quail, { foreignKey: 'quailId' });
 Duck.hasMany(WeightRecord, { foreignKey: 'duckId', onDelete: 'CASCADE' });
 WeightRecord.belongsTo(Duck, { foreignKey: 'duckId' });
 
+// ==================== BATCH PARENT ASSOCIATIONS ====================
+
 Chicken.belongsTo(AnimalBatch, { as: 'ParentBatch', foreignKey: 'parentBatchId' });
 AnimalBatch.hasMany(Chicken, { as: 'ChildrenChickens', foreignKey: 'parentBatchId' });
 
@@ -83,6 +94,8 @@ AnimalBatch.hasMany(Quail, { as: 'ChildrenQuails', foreignKey: 'parentBatchId' }
 
 Duck.belongsTo(AnimalBatch, { as: 'ParentBatch', foreignKey: 'parentBatchId' });
 AnimalBatch.hasMany(Duck, { as: 'ChildrenDucks', foreignKey: 'parentBatchId' });
+
+// ==================== BATCH ASSOCIATIONS ====================
 
 AnimalBatch.hasMany(EggProductionLog, { foreignKey: 'batchId', onDelete: 'CASCADE' });
 EggProductionLog.belongsTo(AnimalBatch, { foreignKey: 'batchId' });
@@ -117,15 +130,45 @@ LegRing.belongsTo(AnimalBatch, { foreignKey: 'batchId' });
 AnimalBatch.hasMany(BiosecurityLog, { foreignKey: 'batchId', onDelete: 'CASCADE' });
 BiosecurityLog.belongsTo(AnimalBatch, { foreignKey: 'batchId' });
 
-// Sync
+// ==================== CROP ASSOCIATIONS (FIXED ALIASES) ====================
+
+Crop.hasMany(Harvest, { foreignKey: 'cropId', onDelete: 'CASCADE', as: 'harvests' });
+Harvest.belongsTo(Crop, { foreignKey: 'cropId', as: 'crop' }); // unique alias
+
+Crop.hasMany(Sale, { foreignKey: 'cropId', onDelete: 'CASCADE', as: 'sales' });
+Sale.belongsTo(Crop, { foreignKey: 'cropId', as: 'crop' }); // same alias OK on reverse if same relationship
+
+Crop.hasOne(Stock, { foreignKey: 'cropId', onDelete: 'CASCADE', as: 'stock' });
+Stock.belongsTo(Crop, { foreignKey: 'cropId', as: 'crop' }); // consistent alias
+
+Crop.hasMany(Expense, { foreignKey: 'cropId', onDelete: 'CASCADE', as: 'expenses' });
+Expense.belongsTo(Crop, { foreignKey: 'cropId', as: 'crop' }); // same alias used across all belongsTo Crop
+
+// Note: Using the same alias 'crop' for all belongsTo(Crop) is perfectly fine and recommended.
+// The conflict only happens when two *different* associations use the same alias.
+
+Harvest.hasMany(Wastage, { foreignKey: 'harvestId', onDelete: 'CASCADE', as: 'wastages' });
+Wastage.belongsTo(Harvest, { foreignKey: 'harvestId', as: 'harvest' });
+
+// ==================== DATABASE SYNC ====================
+
 const syncDatabase = async () => {
   try {
-    await sequelize.sync({ alter: true });
-    console.log('Database synced successfully');
+    // Temporarily disable foreign key checks for the sync
+    await sequelize.query('SET FOREIGN_KEY_CHECKS = 0;');
+    
+    await sequelize.sync({ force: true });
+    
+    // Re-enable foreign key checks
+    await sequelize.query('SET FOREIGN_KEY_CHECKS = 1;');
+    
+    console.log('✅ Database synced successfully (with force: true)');
   } catch (error) {
-    console.error('Error syncing database:', error);
+    console.error('❌ Error syncing database:', error);
   }
 };
+
+// ==================== EXPORTS ====================
 
 module.exports = {
   sequelize,
@@ -152,6 +195,8 @@ module.exports = {
   Income,
   LegRing,
   BiosecurityLog,
+  Incubator,
+  FeedType,
   Harvest,
   Sale,
   Wastage,

@@ -1,6 +1,5 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/db');
-const Crop = require('./Crop');
 
 const Expense = sequelize.define('Expense', {
   id: {
@@ -10,27 +9,50 @@ const Expense = sequelize.define('Expense', {
   },
   cropId: {
     type: DataTypes.INTEGER,
-    allowNull: true
+    allowNull: true  // null means farm-wide expense
   },
-  type: {  // ← changed from category
-    type: DataTypes.STRING,
-    allowNull: false
+  batchId: {
+    type: DataTypes.INTEGER,
+    allowNull: true  // For animal batches
   },
-  amount: {  // ← changed from amountLKR
+  date: {
+    type: DataTypes.DATEONLY,
+    allowNull: false,
+    defaultValue: DataTypes.NOW
+  },
+  amount: {
     type: DataTypes.FLOAT,
     allowNull: false
   },
-  date: {  // ← changed from expenseDate
-    type: DataTypes.DATEONLY,
-    allowNull: false
+  amountLKR: {  // Alias for compatibility with poultry code
+    type: DataTypes.VIRTUAL,
+    get() {
+      return this.getDataValue('amount');
+    }
+  },
+  expenseDate: {  // Alias for compatibility with poultry code
+    type: DataTypes.VIRTUAL,
+    get() {
+      return this.getDataValue('date');
+    }
+  },
+  category: {
+    type: DataTypes.STRING,
+    allowNull: true,
+    defaultValue: 'Other'
+    // Common categories: 'Fertilizer', 'Labor', 'Seeds', 'Pesticides', 
+    // 'Equipment', 'Feed', 'Medicine', 'Utilities', 'Other'
   },
   description: {
-    type: DataTypes.STRING,
+    type: DataTypes.TEXT,
+    allowNull: true
+  },
+  notes: {
+    type: DataTypes.TEXT,
     allowNull: true
   }
+}, {
+  timestamps: true
 });
-
-Crop.hasMany(Expense, { foreignKey: 'cropId', onDelete: 'SET NULL' });
-Expense.belongsTo(Crop, { foreignKey: 'cropId' });
 
 module.exports = Expense;
