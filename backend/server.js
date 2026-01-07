@@ -36,6 +36,8 @@ const biosecurityLogRoutes = require('./routes/biosecurityLogRoutes');
 const incubatorRoutes = require('./routes/incubatorRoutes');
 const feedTypeRoutes = require('./routes/feedTypeRoutes');
 const analyticsRoutes = require('./routes/analyticsRoutes');
+const harvestRoutes = require('./routes/harvestRoutes');
+const saleRoutes = require('./routes/saleRoutes');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/animals', animalRoutes);
@@ -62,6 +64,8 @@ app.use('/api/biosecurity-logs', biosecurityLogRoutes);
 app.use('/api/incubators', incubatorRoutes);
 app.use('/api/feed-types', feedTypeRoutes);
 app.use('/api/analytics', analyticsRoutes);
+app.use('/api/harvests', harvestRoutes);
+app.use('/api/sales', saleRoutes);
 
 
 // Sync DB and start server

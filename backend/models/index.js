@@ -23,6 +23,8 @@ const LegRing = require('./LegRing');
 const BiosecurityLog = require('./BiosecurityLog');
 const Incubator = require('./Incubator');
 const FeedType = require('./FeedType');
+const Harvest = require('./Harvest');
+const Sale = require('./Sale');
 
 // Associations
 Animal.hasMany(AnimalBatch, { foreignKey: 'animalId', onDelete: 'CASCADE' });
@@ -146,5 +148,7 @@ module.exports = {
   Expense,
   Income,
   LegRing,
-  BiosecurityLog
+  BiosecurityLog,
+  Harvest,
+  Sale
 };

@@ -2,7 +2,7 @@ const { DataTypes } = require('sequelize');
 const sequelize = require('../config/db');
 const Crop = require('./Crop');
 
-const Expense = sequelize.define('Expense', {
+const Sale = sequelize.define('Sale', {
   id: {
     type: DataTypes.INTEGER,
     autoIncrement: true,
@@ -10,27 +10,31 @@ const Expense = sequelize.define('Expense', {
   },
   cropId: {
     type: DataTypes.INTEGER,
-    allowNull: true
-  },
-  type: {  // ← changed from category
-    type: DataTypes.STRING,
     allowNull: false
   },
-  amount: {  // ← changed from amountLKR
-    type: DataTypes.FLOAT,
-    allowNull: false
-  },
-  date: {  // ← changed from expenseDate
+  date: {
     type: DataTypes.DATEONLY,
     allowNull: false
   },
-  description: {
+  quantityKg: {
+    type: DataTypes.FLOAT,
+    allowNull: false
+  },
+  pricePerKg: {
+    type: DataTypes.FLOAT,
+    allowNull: false
+  },
+  buyer: {
     type: DataTypes.STRING,
+    allowNull: true  // e.g., "Wholesale Market", "Exporter X"
+  },
+  notes: {
+    type: DataTypes.TEXT,
     allowNull: true
   }
 });
 
-Crop.hasMany(Expense, { foreignKey: 'cropId', onDelete: 'SET NULL' });
-Expense.belongsTo(Crop, { foreignKey: 'cropId' });
+Crop.hasMany(Sale, { foreignKey: 'cropId', onDelete: 'CASCADE' });
+Sale.belongsTo(Crop, { foreignKey: 'cropId' });
 
-module.exports = Expense;
+module.exports = Sale;

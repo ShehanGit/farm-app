@@ -7,5 +7,6 @@ router.get('/egg-production-trends', auth, analyticsController.getEggProductionT
 router.get('/feed-conversion-ratio', auth, analyticsController.getFeedConversionRatio);
 router.get('/cost-vs-income', auth, analyticsController.getCostVsIncome);
 router.get('/batch-performance', auth, analyticsController.getBatchPerformance);
+router.get('/profit-summary', auth, analyticsController.getProfitSummary);
 
 module.exports = router;

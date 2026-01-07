@@ -1,6 +1,94 @@
-const { EggProductionLog, FeedConsumptionLog, Income, Expense, LifeEvent, AnimalBatch } = require('../models');
+const { EggProductionLog, FeedConsumptionLog, Income, Expense, LifeEvent, AnimalBatch, Crop, Harvest, Sale } = require('../models');
 const { Op } = require('sequelize');
 
+
+exports.getProfitSummary = async (req, res) => {
+  try {
+    const crops = await Crop.findAll();
+    const totalAcres = crops.reduce((sum, crop) => sum + crop.acre, 0);
+
+    // Costs (same as before)
+    const expenses = await Expense.findAll();
+    const farmWideCosts = expenses.filter(e => !e.cropId).reduce((sum, e) => sum + e.amount, 0);
+    const cropDirectCosts = {};
+    expenses.filter(e => e.cropId).forEach(e => {
+      cropDirectCosts[e.cropId] = (cropDirectCosts[e.cropId] || 0) + e.amount;
+    });
+
+    const cropTotalCosts = {};
+    crops.forEach(crop => {
+      const direct = cropDirectCosts[crop.id] || 0;
+      const proportion = totalAcres > 0 ? crop.acre / totalAcres : 0;
+      const allocated = farmWideCosts * proportion;
+      cropTotalCosts[crop.id] = direct + allocated;
+    });
+
+    // Harvests (for stock)
+    const harvests = await Harvest.findAll();
+    const cropHarvested = {};
+    harvests.forEach(h => {
+      cropHarvested[h.cropId] = (cropHarvested[h.cropId] || 0) + h.quantityKg;
+    });
+
+    // Sales (for income)
+    const sales = await Sale.findAll();
+    const cropIncome = {};
+    const cropSold = {};
+    sales.forEach(s => {
+      const income = s.quantityKg * s.pricePerKg;
+      cropIncome[s.cropId] = (cropIncome[s.cropId] || 0) + income;
+      cropSold[s.cropId] = (cropSold[s.cropId] || 0) + s.quantityKg;
+    });
+
+    // Totals
+    const totalFarmIncome = Object.values(cropIncome).reduce((sum, v) => sum + v, 0);
+    const totalCropDirectCosts = Object.values(cropDirectCosts).reduce((sum, v) => sum + v, 0);
+    const totalFarmCost = farmWideCosts + totalCropDirectCosts;
+    const totalFarmProfit = totalFarmIncome - totalFarmCost;
+
+    // Per-crop summary with stock
+    const summary = crops.map(crop => {
+      const cost = cropTotalCosts[crop.id] || 0;
+      const income = cropIncome[crop.id] || 0;
+      const harvested = cropHarvested[crop.id] || 0;
+      const sold = cropSold[crop.id] || 0;
+      const currentStockKg = Math.max(0, harvested - sold); // No negative stock
+      const profit = income - cost;
+
+      return {
+        crop: crop.type,
+        acres: crop.acre,
+        harvestedKg: harvested,
+        soldKg: sold,
+        currentStockKg,
+        totalCostLKR: Math.round(cost),
+        totalIncomeLKR: Math.round(income),
+        netProfitLKR: Math.round(profit),
+        profitPerAcreLKR: crop.acre ? Math.round(profit / crop.acre) : 0,
+        costPerKgSoldLKR: sold ? Math.round(cost / sold) : null,
+        profitPerKgSoldLKR: sold ? Math.round(profit / sold) : null,
+        averageSalePricePerKg: sold ? Math.round(income / sold) : null
+      };
+    });
+
+    const totalStockKg = summary.reduce((sum, item) => sum + item.currentStockKg, 0);
+
+    res.json({
+      summary,
+      farmTotal: {
+        totalIncomeLKR: Math.round(totalFarmIncome),
+        totalCostLKR: Math.round(totalFarmCost),
+        netProfitLKR: Math.round(totalFarmProfit),
+        profitPerAcreLKR: totalAcres ? Math.round(totalFarmProfit / totalAcres) : 0,
+        totalHarvestedKg: Object.values(cropHarvested).reduce((sum, v) => sum + v, 0),
+        totalSoldKg: Object.values(cropSold).reduce((sum, v) => sum + v, 0),
+        totalStockKg
+      }
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
 
 
 // ... existing imports ...
