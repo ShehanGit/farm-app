@@ -36,20 +36,8 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-green-800 text-white shadow-lg">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-          <h1 className="text-2xl font-bold">🌴 My Farm Profit Dashboard</h1>
-          <button
-            onClick={handleLogout}
-            className="flex items-center gap-2 bg-green-700 px-4 py-2 rounded-lg hover:bg-green-600 transition"
-          >
-            <LogOut size={20} />
-            Logout
-          </button>
-        </div>
-      </header>
-
+  
+     
       <main className="max-w-7xl mx-auto p-6 grid gap-8">
         {/* Profit Summary */}
         <div className="bg-white rounded-xl shadow-md p-6">

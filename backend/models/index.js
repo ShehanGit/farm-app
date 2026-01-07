@@ -157,7 +157,8 @@ const syncDatabase = async () => {
     // Temporarily disable foreign key checks for the sync
     await sequelize.query('SET FOREIGN_KEY_CHECKS = 0;');
     
-    await sequelize.sync({ force: true });
+    await sequelize.sync({ alter: true });
+
     
     // Re-enable foreign key checks
     await sequelize.query('SET FOREIGN_KEY_CHECKS = 1;');

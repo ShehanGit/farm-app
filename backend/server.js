@@ -55,6 +55,10 @@ app.use('/api/expenses', expenseRoutes);
 const taskRoutes = require('./routes/taskRoutes');
 app.use('/api/tasks', taskRoutes);
 
+const salesRoutes = require('./routes/saleRoutes'); // or saleRoutes if you keep the name
+app.use('/api/sales', salesRoutes);
+
+
 // Animal/Poultry routes (if you have them)
 // const animalRoutes = require('./routes/animalRoutes');
 // app.use('/api/animals', animalRoutes);
