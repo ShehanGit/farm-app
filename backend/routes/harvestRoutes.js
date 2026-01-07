@@ -31,4 +31,20 @@ router.get('/:id', auth, async (req, res) => {
   }
 });
 
+router.get('/', auth, async (req, res) => {
+  try {
+    const where = {};
+    if (req.query.cropId) where.cropId = req.query.cropId;
+    const harvests = await Harvest.findAll({
+      where,
+      include: ['Crop'],
+      order: [['date', 'DESC']]
+    });
+    res.json(harvests);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+
 module.exports = router;

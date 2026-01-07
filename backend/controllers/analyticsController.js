@@ -82,6 +82,7 @@ exports.getProfitSummary = async (req, res) => {
       const profit = income - cost;
 
       return {
+        cropId: crop.id,
         crop: crop.type,
         acres: crop.acre,
         harvestedKg: harvested,

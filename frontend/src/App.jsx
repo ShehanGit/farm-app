@@ -5,6 +5,8 @@ import Tasks from './pages/Tasks';
 import Crops from './pages/Crops';
 import Header from './components/Header';
 import Sidebar from './components/Sidebar';
+import CropDetail from './pages/CropDetail';
+
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 
@@ -53,11 +55,12 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route path="/" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
-        <Route path="/tasks" element={<PrivateRoute><Tasks /></PrivateRoute>} />
-        <Route path="/crops" element={<PrivateRoute><Crops /></PrivateRoute>} />
-      </Routes>
+      <Route path="/login" element={<Login />} />
+      <Route path="/" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
+      <Route path="/tasks" element={<PrivateRoute><Tasks /></PrivateRoute>} />
+      <Route path="/crops" element={<PrivateRoute><Crops /></PrivateRoute>} />
+      <Route path="/crops/:id" element={<PrivateRoute><CropDetail /></PrivateRoute>} />  {/* New */}
+    </Routes>
     </BrowserRouter>
   );
 }

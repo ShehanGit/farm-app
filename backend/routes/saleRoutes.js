@@ -31,4 +31,20 @@ router.get('/:id', auth, async (req, res) => {
   }
 });
 
+router.get('/', auth, async (req, res) => {
+  try {
+    const where = {};
+    if (req.query.cropId) where.cropId = req.query.cropId;
+    const sales = await Sale.findAll({
+      where,
+      include: ['Crop'],
+      order: [['date', 'DESC']]
+    });
+    res.json(sales);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+
 module.exports = router;
