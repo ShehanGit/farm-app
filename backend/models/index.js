@@ -27,6 +27,7 @@ const Harvest = require('./Harvest');
 const Sale = require('./Sale');
 const Wastage = require('./Wastage');
 const Stock = require('./Stock');
+const Task = require('./Task');
 
 // Associations
 Animal.hasMany(AnimalBatch, { foreignKey: 'animalId', onDelete: 'CASCADE' });
@@ -154,5 +155,6 @@ module.exports = {
   Harvest,
   Sale,
   Wastage,
-  Stock
+  Stock,
+  Task
 };

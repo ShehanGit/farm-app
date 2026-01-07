@@ -2,7 +2,8 @@ const express = require('express');
 const dotenv = require('dotenv');
 const cors = require('cors');
 const bodyParser = require('body-parser');
-const { syncDatabase } = require('./models');  // Auto-sync tables
+const { syncDatabase } = require('./models');  // Auto-sync 
+
 
 dotenv.config();
 
@@ -40,6 +41,7 @@ const harvestRoutes = require('./routes/harvestRoutes');
 const saleRoutes = require('./routes/saleRoutes');
 const wastageRoutes = require('./routes/wastageRoutes');
 const stockRoutes = require('./routes/stockRoutes');
+const taskRoutes = require('./routes/taskRoutes');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/animals', animalRoutes);
@@ -70,7 +72,7 @@ app.use('/api/harvests', harvestRoutes);
 app.use('/api/sales', saleRoutes);
 app.use('/api/wastages', wastageRoutes);
 app.use('/api/stocks', stockRoutes);
-
+app.use('/api/tasks', taskRoutes);
 
 
 // Sync DB and start server
