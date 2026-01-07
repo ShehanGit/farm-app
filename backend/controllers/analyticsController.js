@@ -1,14 +1,21 @@
-const { EggProductionLog, FeedConsumptionLog, Income, Expense, LifeEvent, AnimalBatch, Crop, Harvest, Sale } = require('../models');
+const { Crop, Expense, Harvest, Sale, Wastage, Stock } = require('../models');
 const { Op } = require('sequelize');
 
-
 exports.getProfitSummary = async (req, res) => {
+  const { start, end } = req.query; // e.g., ?start=2025-01-01&end=2025-12-31
+  const dateFilter = start && end ? {
+    [Op.and]: [
+      { date: { [Op.gte]: start } },
+      { date: { [Op.lte]: end } }
+    ]
+  } : {};
+
   try {
     const crops = await Crop.findAll();
     const totalAcres = crops.reduce((sum, crop) => sum + crop.acre, 0);
 
-    // Costs (same as before)
-    const expenses = await Expense.findAll();
+    // Expenses (filtered)
+    const expenses = await Expense.findAll({ where: dateFilter });
     const farmWideCosts = expenses.filter(e => !e.cropId).reduce((sum, e) => sum + e.amount, 0);
     const cropDirectCosts = {};
     expenses.filter(e => e.cropId).forEach(e => {
@@ -23,15 +30,25 @@ exports.getProfitSummary = async (req, res) => {
       cropTotalCosts[crop.id] = direct + allocated;
     });
 
-    // Harvests (for stock)
-    const harvests = await Harvest.findAll();
+    // Harvests (filtered by date)
+    const harvests = await Harvest.findAll({ where: dateFilter });
     const cropHarvested = {};
     harvests.forEach(h => {
       cropHarvested[h.cropId] = (cropHarvested[h.cropId] || 0) + h.quantityKg;
     });
 
-    // Sales (for income)
-    const sales = await Sale.findAll();
+    // Wastages (filtered, aggregated per crop via harvest)
+    const wastages = await Wastage.findAll({ where: dateFilter, include: ['Harvest'] });
+    const cropWasted = {};
+    wastages.forEach(w => {
+      const cropId = w.Harvest ? w.Harvest.cropId : null;
+      if (cropId) {
+        cropWasted[cropId] = (cropWasted[cropId] || 0) + w.quantityKg;
+      }
+    });
+
+    // Sales (filtered)
+    const sales = await Sale.findAll({ where: dateFilter });
     const cropIncome = {};
     const cropSold = {};
     sales.forEach(s => {
@@ -40,19 +57,28 @@ exports.getProfitSummary = async (req, res) => {
       cropSold[s.cropId] = (cropSold[s.cropId] || 0) + s.quantityKg;
     });
 
+    // Stock Overrides
+    const stocks = await Stock.findAll();
+    const cropStockOverrides = {};
+    stocks.forEach(s => {
+      cropStockOverrides[s.cropId] = s.currentKg;
+    });
+
     // Totals
     const totalFarmIncome = Object.values(cropIncome).reduce((sum, v) => sum + v, 0);
     const totalCropDirectCosts = Object.values(cropDirectCosts).reduce((sum, v) => sum + v, 0);
     const totalFarmCost = farmWideCosts + totalCropDirectCosts;
     const totalFarmProfit = totalFarmIncome - totalFarmCost;
 
-    // Per-crop summary with stock
+    // Per-crop summary
     const summary = crops.map(crop => {
       const cost = cropTotalCosts[crop.id] || 0;
       const income = cropIncome[crop.id] || 0;
       const harvested = cropHarvested[crop.id] || 0;
       const sold = cropSold[crop.id] || 0;
-      const currentStockKg = Math.max(0, harvested - sold); // No negative stock
+      const wasted = cropWasted[crop.id] || 0;
+      const calculatedStock = Math.max(0, harvested - sold - wasted);
+      const currentStockKg = cropStockOverrides[crop.id] !== undefined ? cropStockOverrides[crop.id] : calculatedStock;
       const profit = income - cost;
 
       return {
@@ -60,6 +86,7 @@ exports.getProfitSummary = async (req, res) => {
         acres: crop.acre,
         harvestedKg: harvested,
         soldKg: sold,
+        wastedKg: wasted,
         currentStockKg,
         totalCostLKR: Math.round(cost),
         totalIncomeLKR: Math.round(income),
@@ -72,6 +99,7 @@ exports.getProfitSummary = async (req, res) => {
     });
 
     const totalStockKg = summary.reduce((sum, item) => sum + item.currentStockKg, 0);
+    const totalWastedKg = Object.values(cropWasted).reduce((sum, v) => sum + v, 0);
 
     res.json({
       summary,
@@ -82,6 +110,7 @@ exports.getProfitSummary = async (req, res) => {
         profitPerAcreLKR: totalAcres ? Math.round(totalFarmProfit / totalAcres) : 0,
         totalHarvestedKg: Object.values(cropHarvested).reduce((sum, v) => sum + v, 0),
         totalSoldKg: Object.values(cropSold).reduce((sum, v) => sum + v, 0),
+        totalWastedKg,
         totalStockKg
       }
     });

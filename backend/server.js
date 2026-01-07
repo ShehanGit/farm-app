@@ -38,6 +38,8 @@ const feedTypeRoutes = require('./routes/feedTypeRoutes');
 const analyticsRoutes = require('./routes/analyticsRoutes');
 const harvestRoutes = require('./routes/harvestRoutes');
 const saleRoutes = require('./routes/saleRoutes');
+const wastageRoutes = require('./routes/wastageRoutes');
+const stockRoutes = require('./routes/stockRoutes');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/animals', animalRoutes);
@@ -66,6 +68,9 @@ app.use('/api/feed-types', feedTypeRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/harvests', harvestRoutes);
 app.use('/api/sales', saleRoutes);
+app.use('/api/wastages', wastageRoutes);
+app.use('/api/stocks', stockRoutes);
+
 
 
 // Sync DB and start server
