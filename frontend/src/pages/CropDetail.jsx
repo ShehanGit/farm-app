@@ -63,10 +63,19 @@ export default function CropDetail() {
   if (error) return <div className="text-center py-12 text-red-600 text-xl">{error}</div>;
   if (!crop) return <div className="text-center py-12">Crop not found</div>;
 
-  // Mock chart data (replace later with real time-series)
+  // Mock data for charts (replace with real later)
   const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
   const profitData = [30000, 45000, 70000, 55000, 90000, 110000];
   const stockData = [800, 1200, 900, 1100, 700, 950];
+
+  const chartOptions = {
+    responsive: true,
+    maintainAspectRatio: false,  // Allows fixed height
+    plugins: {
+      legend: { position: 'top' },
+      title: { display: false }
+    }
+  };
 
   const profitChart = {
     labels: months,
@@ -91,7 +100,7 @@ export default function CropDetail() {
 
   return (
     <div className="max-w-6xl mx-auto space-y-8 pb-12">
-      {/* Back Button + Title */}
+      {/* Back + Title */}
       <div className="flex items-center gap-4">
         <Link to="/crops" className="flex items-center gap-2 text-green-700 hover:underline">
           <ArrowLeft size={20} /> Back to Crops
@@ -109,7 +118,7 @@ export default function CropDetail() {
         <div className="bg-gradient-to-br from-orange-50 to-orange-100 p-6 rounded-xl text-center shadow">
           <Package className="mx-auto text-orange-600 mb-2" size={32} />
           <p className="text-sm text-gray-600">Current Stock</p>
-          <p className="text-3xl font-bold text-orange-700">~950 kg</p> {/* Replace with real calc later */}
+          <p className="text-3xl font-bold text-orange-700">~950 kg</p>
         </div>
         <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-xl text-center shadow">
           <DollarSign className="mx-auto text-blue-600 mb-2" size={32} />
@@ -122,15 +131,19 @@ export default function CropDetail() {
         </div>
       </div>
 
-      {/* Charts */}
+      {/* Charts - Fixed Height! */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <div className="bg-white p-8 rounded-xl shadow-lg">
           <h2 className="text-2xl font-semibold mb-6 text-gray-800">Profit Trend (2026)</h2>
-          <Line data={profitChart} options={{ responsive: true, maintainAspectRatio: false }} height={300} />
+          <div className="h-96">  {/* ← THIS FIXES THE STRETCHING */}
+            <Line data={profitChart} options={chartOptions} />
+          </div>
         </div>
         <div className="bg-white p-8 rounded-xl shadow-lg">
           <h2 className="text-2xl font-semibold mb-6 text-gray-800">Stock Levels (kg)</h2>
-          <Bar data={stockChart} options={{ responsive: true, maintainAspectRatio: false }} height={300} />
+          <div className="h-96">  {/* ← THIS FIXES THE STRETCHING */}
+            <Bar data={stockChart} options={chartOptions} />
+          </div>
         </div>
       </div>
 
@@ -145,7 +158,7 @@ export default function CropDetail() {
               {expenses.slice(0, 5).map(e => (
                 <li key={e.id} className="flex justify-between">
                   <span>{e.type} ({e.date})</span>
-                  <span className="text-red-600 font-medium">-LKR {e.amount}</span>
+                  <span className="text-red-600 font-medium">-LKR {e.amount.toLocaleString()}</span>
                 </li>
               ))}
             </ul>
